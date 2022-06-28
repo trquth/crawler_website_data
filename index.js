@@ -5,7 +5,18 @@ const puppeteer = require("puppeteer");
   const page = await browser.newPage();
   page.setViewport({ width: 1280, height: 720 });
   await page.goto("https://kenh14.vn", { waitUntil: "networkidle2" });
-  await page.screenshot({ path: "kenh14.png" });
+
+  const articles = await page.evaluate(() => {
+    let titleLinks = document.querySelectorAll("h3.knswli-title > a");
+    titleLinks = [...titleLinks];
+    let articles = titleLinks.map((link) => ({
+      title: link.getAttribute("title"),
+      url: link.getAttribute("href"),
+    }));
+    return articles;
+  });
+
+  console.log(articles);
 
   await browser.close();
 })();
